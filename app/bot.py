@@ -141,6 +141,13 @@ async def stock_data(ctx, stock_company):
 
 
 
+@bot.command(name="daily-trade-updates", help="Check latest detailed plot of a company.")
+async def get_daily_trade_updates_plot(ctx, stock_company):
+    if stock_company in top_stock_companies:
+        await sub_bot.send_daily_trade_updates_plot(stock_company, ctx)
+    else:
+        await ctx.send("Stock data plot for {stockCompany} doesn't exist!".format(stockCompany=stock_company))
+
 
 
 @bot.command(name="create-channel", help="An admin creates a new channel.")
