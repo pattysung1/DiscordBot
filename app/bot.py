@@ -71,6 +71,13 @@ async def on_ready():
 async def get_list(ctx):
     await ctx.send(top_stock_companies)
 
+@bot.command(name="add-company", help="Add a tracking company to the tracking list.")
+async def add_company(ctx, stock_company):
+    global top_stock_companies
+    with app.app_context():
+        test = Symbol.query.filter_by(symbol=stock_company).first()
+        if test:
+            return 'That symbol already exists.', 409
 
         symbol = Symbol(symbol=stock_company)
         db.session.add(symbol)
@@ -133,7 +140,6 @@ async def stock_data(ctx, stock_company):
         await ctx.send("Stock data for {stockCompany} doesn't exist!".format(stockCompany=stock_company))
 
 
-
 @bot.command(name="daily-trade-updates", help="Check latest detailed plot of a company.")
 async def get_daily_trade_updates_plot(ctx, stock_company):
     if stock_company in top_stock_companies:
@@ -141,6 +147,24 @@ async def get_daily_trade_updates_plot(ctx, stock_company):
     else:
         await ctx.send("Stock data plot for {stockCompany} doesn't exist!".format(stockCompany=stock_company))
 
+
+@bot.command(name="stock-history", help="Check historical plot of a company(s).")
+async def get_stock_history(ctx, *args):
+    if len(args) >= 1:
+        if set(args).issubset(tuple(top_stock_companies)):
+            await sub_bot.send_history_plot(args, ctx)
+        else:
+            await ctx.send("Invalid set of companies!")
+    else:
+        await ctx.send("Please enter atleast one company as argument.")
+
+
+@bot.command(name="stock-history-bw-dates", help="Check historical plot of company(s) for start & end date.")
+async def get_stock_history_in_date_interval(ctx, *args):
+    if len(args) >= 3:
+        await sub_bot.send_history_plot_in_date_interval(args, ctx)
+    else:
+        await ctx.send("Please enter correct usage")
 
 
 @bot.command(name="create-channel", help="An admin creates a new channel.")
