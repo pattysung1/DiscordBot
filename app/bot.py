@@ -71,13 +71,6 @@ async def on_ready():
 async def get_list(ctx):
     await ctx.send(top_stock_companies)
 
-@bot.command(name="add-company", help="Add a tracking company to the tracking list.")
-async def add_company(ctx, stock_company):
-    global top_stock_companies
-    with app.app_context():
-        test = Symbol.query.filter_by(symbol=stock_company).first()
-        if test:
-            return 'That symbol already exists.', 409
 
         symbol = Symbol(symbol=stock_company)
         db.session.add(symbol)
